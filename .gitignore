@@ -3,5 +3,7 @@
 
 .classpath
 .project
-
+.factorypath
+*.iml
+.idea/
 target/

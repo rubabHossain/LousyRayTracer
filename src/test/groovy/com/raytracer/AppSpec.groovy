@@ -1,3 +1,5 @@
+package com.raytracer
+
 import spock.lang.*
 
 class AppSpec extends Specification {

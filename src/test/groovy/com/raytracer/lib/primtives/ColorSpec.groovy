@@ -1,4 +1,4 @@
-package com.raytracer.primtives
+package com.raytracer.lib.primtives
 
 import spock.lang.Specification
 

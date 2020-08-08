@@ -17,6 +17,7 @@ public class Matrix {
         this.numCols = 0;
     }
 
+
     public Matrix(List<List<Double>> listOfRows) {
         this.rows = new ArrayList<>();
         for(List<Double> row : listOfRows) {
@@ -32,15 +33,18 @@ public class Matrix {
         return this.rows;
     }
 
+
     public int getNumRows() {
         return this.numRows;
     }
+
 
     public int getNumColumns() {
         return this.numCols;
     }
 
-    private Matrix addRow(List<Double> row_) {
+
+    private void addRow(List<Double> row_) {
         // if this is first row being added, set numCols to be length of incoming row
         List<Double> row = new ArrayList<>(row_);
         if(this.rows.size() == 0) {
@@ -56,16 +60,64 @@ public class Matrix {
         // otherwise, all is well, add column to column list.
         this.rows.add(row);
         this.numRows++;
-        return this;
     }
 
 
-    private List<Double> getColumn(int i) {
+    public List<Double> getColumn(int i) {
         return this.rows.stream()
                 .map( row -> row.get(i) )
                 .collect(Collectors.toList());
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)                        // self check
+            return true;
+
+        if (o == null)                        // null check
+            return false;
+
+
+        if (o.getClass() != this.getClass())  // type check and cast
+            return false;
+
+        Matrix otherMatrix = (Matrix) o;      // compare fields ....
+        // check size
+        if(otherMatrix.getNumRows() != this.numRows || otherMatrix.getNumColumns() != this.numCols)
+            return false;
+
+        List<List<Double>> otherElements = otherMatrix.getBackingArray();
+
+        for(int i = 0; i < this.numRows; i++) {
+            List<Double> otherRow = otherElements.get(i);
+            List<Double> myRow = rows.get(i);
+            for(int j = 0; j < this.numCols; j++) {
+                double myElem = myRow.get(j), otherElem = otherRow.get(j);
+                double diff = Math.abs(myElem - otherElem);
+                if(diff > EPSILON)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    @Override
+    public int hashCode() {
+        int ctr = 1;
+        int sum = 0;
+        for(List<Double> row: this.rows) {
+            for(double d: row) {
+                sum += ctr * Math.round(d);
+                ctr += 2;
+            }
+        }
+        return sum;
+    }
+
+    /* -------------------- Operations -------------------- */
 
     public Matrix mult(Matrix other) {
         Matrix newMtx = new Matrix();
@@ -97,55 +149,15 @@ public class Matrix {
             resultingVector = resultingVector.add(mtxCol.mult(d));
         }
         return resultingVector;
-
     }
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)                        // self check
-            return true;
-
-        if (o == null)                        // null check
-            return false;
-
-
-        if (o.getClass() != this.getClass())  // type check and cast
-            return false;
-
-        Matrix otherMatrix = (Matrix) o;      // compare fields ....
-        // check size
-        if(otherMatrix.getNumRows() != this.numRows || otherMatrix.getNumColumns() != this.numCols)
-            return false;
-
-        List<List<Double>> otherElements = otherMatrix.getBackingArray();
-
-        for(int i = 0; i < this.numRows; i++) {
-            List<Double> otherRow = otherElements.get(i);
-            List<Double> myRow = rows.get(i);
-            for(int j = 0; j < this.numCols; j++) {
-                double myElem = myRow.get(j);
-                double otherElem = otherRow.get(j);
-                double diff = Math.abs(myElem - otherElem);
-                if(diff > EPSILON)
-                    return false;
-            }
+    public Matrix transpose() {
+        Matrix mtx = new Matrix();
+        for(int i = 0; i < numCols; i++) {
+            List<Double> col = this.getColumn(i);
+            mtx.addRow(col);
         }
-
-        return true;
-    }
-
-    @Override
-    public int hashCode() {
-        int ctr = 1;
-        int sum = 0;
-        for(List<Double> row: this.rows) {
-            for(double d: row) {
-                sum += ctr * Math.round(d);
-                ctr += 2;
-            }
-        }
-        return sum;
+        return mtx;
     }
 
 }

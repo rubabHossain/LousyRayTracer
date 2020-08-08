@@ -26,6 +26,40 @@ class MatrixSpec extends Specification{
         underlyingArray.get(3).get(3) == 3.3
     }
 
+
+    def "Matrix EQUALITY"() {
+        when:
+        def row0 = [0.0d, 0.1d, 0.2d, 0.3d]
+        def row1 = [1.0d, 1.1d, 1.2d, 1.3d]
+        def row2 = [2.0d, 2.1d, 2.2d, 2.3d]
+        def row3 = [3.0d, 3.1d, 3.2d, 3.3d]
+        def row3Dup = [3.0d, 3.1d, 3.2d, 3.3d+1E-8]
+        def listOfRows = [row0, row1, row2, row3]
+        def listOfRowsDup = [row0, row1, row2, row3Dup]
+
+        def listOfRowsDiffOrder = [row1, row0, row3, row2]
+        def listOfRowsDiffSize = [row1, row0]
+        def listOfRowsDiff = [row1, row1, row1, row1]
+
+        def ogMtx = new Matrix(listOfRows)
+        def mtx1Same = new Matrix(listOfRows)
+        def mtx2Same = new Matrix(listOfRowsDup)
+
+        def mtx1Diff = new Matrix(listOfRowsDiffOrder)
+        def mtx2Diff = new Matrix(listOfRowsDiffSize)
+        def mtx3Diff = new Matrix(listOfRowsDiff)
+
+        then:
+        ogMtx == ogMtx
+        ogMtx == mtx1Same
+        ogMtx == mtx2Same
+
+        ogMtx != mtx1Diff
+        ogMtx != mtx2Diff
+        ogMtx != mtx3Diff
+    }
+
+
     def "Matrix x Matrix MULTIPLICATION"() {
         given:
         def row0 = [1d,     2d,     3d,     4.1d]
@@ -101,39 +135,38 @@ class MatrixSpec extends Specification{
         matrix.mult(vector) == soln
     }
 
-    def "Identity MULTIPLICATION" () {
 
-    }
-
-    def "Matrix EQUALITY"() {
+    def "Matrix TRANSPOSE" () {
         when:
-        def row0 = [0.0d, 0.1d, 0.2d, 0.3d]
-        def row1 = [1.0d, 1.1d, 1.2d, 1.3d]
-        def row2 = [2.0d, 2.1d, 2.2d, 2.3d]
-        def row3 = [3.0d, 3.1d, 3.2d, 3.3d]
-        def row3Dup = [3.0d, 3.1d, 3.2d, 3.3d+1E-8]
-        def listOfRows = [row0, row1, row2, row3]
-        def listOfRowsDup = [row0, row1, row2, row3Dup]
+        def identity4 = MatrixFactory.Identity(4);
+        def identity1 = MatrixFactory.Identity(1);
 
-        def listOfRowsDiffOrder = [row1, row0, row3, row2]
-        def listOfRowsDiffSize = [row1, row0]
-        def listOfRowsDiff = [row1, row1, row1, row1]
+        def mtxArray =
+                [[ 1d, 2d, 3d, 4d ],
+                 [ 5d, 6d, 7d, 8d ],
+                 [ 9d, 8d, 7d, 6d ],
+                 [ 5d, 4d, 3d, 2d ]]
+        def mtxArrayTranspose =
+                [[ 1d, 5d, 9d, 5d ],
+                 [ 2d, 6d, 8d, 4d ],
+                 [ 3d, 7d, 7d, 3d ],
+                 [ 4d, 8d, 6d, 2d ]]
 
-        def ogMtx = new Matrix(listOfRows)
-        def mtx1Same = new Matrix(listOfRows)
-        def mtx2Same = new Matrix(listOfRowsDup)
-
-        def mtx1Diff = new Matrix(listOfRowsDiffOrder)
-        def mtx2Diff = new Matrix(listOfRowsDiffSize)
-        def mtx3Diff = new Matrix(listOfRowsDiff)
+        def mtx = new Matrix(mtxArray)
+        def mtxTranspose = new Matrix(mtxArrayTranspose)
 
         then:
-        ogMtx == ogMtx
-        ogMtx == mtx1Same
-        ogMtx == mtx2Same
+        identity1.transpose() == identity1
+        identity4.transpose() == identity4
 
-        ogMtx != mtx1Diff
-        ogMtx != mtx2Diff
-        ogMtx != mtx3Diff
+        mtx.transpose() == mtxTranspose
+        mtxTranspose.transpose() == mtx
+
     }
+
+
+    def "Matrix INVERSE"() {
+
+    }
+
 }

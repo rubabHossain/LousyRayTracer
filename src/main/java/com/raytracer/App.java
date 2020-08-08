@@ -14,12 +14,11 @@ public class App {
     public static void main( String[] args ) {
         int height = 550, width = 900;
 
-
         Canvas canvas = new Canvas(height, width);
         Color white = new Color(1, 1, 1);
 
         Point startingPos = new Point(0, 1, 0);
-        Vector startingVel = new Vector(1, 1.6, 0).normalize().mult(10);
+        Vector startingVel = new Vector(1, 1.6, 0).normalize().mult(11.25);
         Projectile prj = new Projectile(startingPos, startingVel);
 
         Vector g = new Vector(0, -0.1, 0);

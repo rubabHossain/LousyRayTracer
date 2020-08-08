@@ -84,6 +84,10 @@ public class ColumnVector {
         return sb.toString();
     }
 
+    public static ColumnVector make(@NonNull final Double ... elements) {
+        return new ColumnVector(elements);
+    }
+
     /* ------------------------ Vector Operations ------------------------ */
 
     /**
@@ -137,10 +141,14 @@ public class ColumnVector {
 
 
     public double dotProduct(@NonNull final ColumnVector other) {
-        BiFunction<Double, Double, Double> mult = (x, y) ->  x * y;
-        return this.applyElementWiseOperation(other, mult).getElements().stream()
-                .mapToDouble(i->i)
-                .sum();
+        if(this.elements.size() != other.getElements().size())
+            throw new RuntimeException("Cannot apply elementwise operation to vectors of differing lengths.");
+
+        double sum = 0;
+        for(int i = 0; i < this.elements.size(); i++) {
+            sum += (this.elements.get(i) * other.getElements().get(i));
+        }
+        return sum;
     }
 
 

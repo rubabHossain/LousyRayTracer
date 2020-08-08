@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 
 
-
 public class App {
     public static void main( String[] args ) {
         int height = 550, width = 900;
@@ -26,7 +25,6 @@ public class App {
         Environment e = new Environment(g, w);
 
         while(prj.getPosition().getY() > 0) {
-//            System.out.println(prj.getPosition());
             int x = (int) Math.round(prj.getPosition().getX());
             int y =  (int) Math.round(prj.getPosition().getY());
             canvas.setPixel(height - y, x, white);
@@ -50,17 +48,8 @@ public class App {
     }
 
 
-    @Value @RequiredArgsConstructor
-    public static class Projectile {
-        Point position;
-        Vector velocity;
-    }
+    @Value @RequiredArgsConstructor public static class Projectile { Point position; Vector velocity; }
 
-
-    @Value @RequiredArgsConstructor
-    public static class Environment {
-        Vector gravity;
-        Vector wind;
-    }
+    @Value @RequiredArgsConstructor public static class Environment { Vector gravity; Vector wind; }
 
 }

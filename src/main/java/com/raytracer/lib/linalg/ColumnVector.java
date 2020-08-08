@@ -104,15 +104,16 @@ public class ColumnVector {
         if(this.elements.size() != other.getElements().size())
             throw new RuntimeException("Cannot apply elementwise operation to vectors of differing lengths.");
 
+        List<Double> newVector = new ArrayList<>();
         for(int i = 0; i < this.elements.size(); i++) {
             double currElem = this.elements.get(i);
             double incomingElem = other.getElements().get(i);
 
             double newElement = operation.apply(currElem, incomingElem);
-            this.elements.set(i, newElement);
+            newVector.add(newElement);
         }
 
-        return this;
+        return new ColumnVector(newVector);
     }
 
 
@@ -141,14 +142,10 @@ public class ColumnVector {
 
 
     public double dotProduct(@NonNull final ColumnVector other) {
-        if(this.elements.size() != other.getElements().size())
-            throw new RuntimeException("Cannot apply elementwise operation to vectors of differing lengths.");
-
-        double sum = 0;
-        for(int i = 0; i < this.elements.size(); i++) {
-            sum += (this.elements.get(i) * other.getElements().get(i));
-        }
-        return sum;
+        BiFunction<Double, Double, Double> mult = (x, y) ->  x * y;
+        return this.applyElementWiseOperation(other, mult).getElements().stream()
+                .mapToDouble(i->i)
+                .sum();
     }
 
 

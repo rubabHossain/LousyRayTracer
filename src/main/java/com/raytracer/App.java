@@ -6,9 +6,6 @@ import com.raytracer.lib.linalg.Matrices;
 import com.raytracer.lib.linalg.Matrix;
 import com.raytracer.lib.primitives.Color;
 import com.raytracer.lib.primitives.Point;
-import com.raytracer.lib.primitives.Vector;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
 
 
 public class App {
@@ -18,10 +15,9 @@ public class App {
 
     public static void main( String[] args ) {
 
-        Matrix rotationMtx = Matrices.Identity(4)
-                                     .rotateZ(Math.PI / 6);
-        Matrix translationMtx = Matrices.Identity(4)
-                                     .translate(50, 50, 0);
+        Matrix rotationMtx = Matrices.Identity(4).rotateZ(Math.PI / 6);
+        Matrix translationMtx = Matrices.Identity(4).translate(50, 50, 0);
+
         Point p = new Point(0, 40, 0);
 
         for(int i = 0; i < 12; i++) {
@@ -29,12 +25,10 @@ public class App {
             canvas.setPixel(height - (int) Math.round(drawP.getY()),
                             (int) Math.round(drawP.getX()),
                             WHITE);
-
             p = rotationMtx.mult(p);
         }
 
         System.out.println(PpmWriter.toFmtString(canvas));
     }
-
 
 }

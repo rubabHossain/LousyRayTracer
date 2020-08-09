@@ -42,4 +42,10 @@ public class Point extends ColumnVector{
         return new Point(cv.getElements().get(0), cv.getElements().get(1), cv.getElements().get(2));
     }
 
+
+    public Vector subtract(@NonNull final Point other) {
+        ColumnVector cv = super.subtract(other);
+        return new Vector(cv.getElements().get(0), cv.getElements().get(1), cv.getElements().get(2));
+    }
+
 }

@@ -32,14 +32,14 @@ public class Point extends ColumnVector{
     /* -------------------- Operations -----------------------*/
 
     public Point add(@NonNull final Vector other) {
-        super.add(other);
-        return this;
+        ColumnVector cv = super.add(other);
+        return new Point(cv.getElements().get(0), cv.getElements().get(1), cv.getElements().get(2));
     }
 
 
     public Point subtract(@NonNull final Vector other) {
-        super.subtract(other);
-        return this;
+        ColumnVector cv = super.subtract(other);
+        return new Point(cv.getElements().get(0), cv.getElements().get(1), cv.getElements().get(2));
     }
 
 }

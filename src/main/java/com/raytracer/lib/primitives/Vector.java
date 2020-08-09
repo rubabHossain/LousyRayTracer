@@ -31,26 +31,26 @@ public class Vector extends ColumnVector{
     /* -------------------- Operations -----------------------*/
 
     public Vector add(@NonNull final Vector other) {
-        super.add(other);
-        return this;
+        ColumnVector cv = super.add(other);
+        return new Vector(cv.getElements().get(0), cv.getElements().get(1), cv.getElements().get(2));
     }
 
 
     public Vector subtract(@NonNull final Vector other) {
-        super.subtract(other);
-        return this;
+        ColumnVector cv = super.subtract(other);
+        return new Vector(cv.getElements().get(0), cv.getElements().get(1), cv.getElements().get(2));
     }
 
 
     public Vector mult(final double scalar) {
-        super.mult(scalar);
-        return this;
+        ColumnVector cv = super.mult(scalar);
+        return new Vector(cv.getElements().get(0), cv.getElements().get(1), cv.getElements().get(2));
     }
 
 
     public Vector div(final double scalar) {
-        super.div(scalar);
-        return this;
+        ColumnVector cv = super.div(scalar);
+        return new Vector(cv.getElements().get(0), cv.getElements().get(1), cv.getElements().get(2));
     }
 
 
@@ -84,11 +84,11 @@ public class Vector extends ColumnVector{
         double ax = aList.get(0), ay = aList.get(1), az = aList.get(2);
         double bx = bList.get(0), by = bList.get(1), bz = bList.get(2);
 
-        this.getElements().set(0, ay * bz - az * by);
-        this.getElements().set(1, az * bx - ax * bz);
-        this.getElements().set(2, ax * by - ay * bx);
+        double newX = (ay * bz) - (az * by);
+        double newY = (az * bx) - (ax * bz);
+        double newZ = (ax * by - ay * bx);
 
-        return this;
+        return new Vector(newX, newY, newZ);
     }
 
 }

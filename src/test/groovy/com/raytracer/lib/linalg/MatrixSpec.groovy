@@ -138,8 +138,8 @@ class MatrixSpec extends Specification{
 
     def "Matrix TRANSPOSE" () {
         when:
-        def identity4 = MatrixFactory.Identity(4);
-        def identity1 = MatrixFactory.Identity(1);
+        def identity4 = Matrices.Identity(4);
+        def identity1 = Matrices.Identity(1);
 
         def mtxArray =
                 [[ 1d, 2d, 3d, 4d ],
@@ -165,8 +165,121 @@ class MatrixSpec extends Specification{
     }
 
 
-    def "Matrix INVERSE"() {
+    def "Matrix DETERMINANT"() {
+        given:
+        def mtx1_2x2 = new Matrix([[1d, 2d],
+                                   [3d, 4d]])
 
+        def mtx2_4x4 = new Matrix([[ -2d , -8d ,  3d ,  5d ],
+                                   [ -3d ,  1d ,  7d ,  3d ],
+                                   [  1d ,  2d , -9d ,  6d ],
+                                   [ -6d ,  7d ,  7d , -9d ]])
+
+
+        def mtx3_3x3 = new Matrix([[  1d ,  2d ,  6d ],
+                                   [ -5d ,  8d , -4d ],
+                                   [  2d ,  6d ,  4d ]])
+
+
+        when:
+        def det1 = mtx1_2x2.determinant()
+        def det2 = mtx2_4x4.determinant()
+        def det3 = mtx3_3x3.determinant()
+
+        then:
+        det1 == -2
+        det2 == -4071
+        det3 == -196
+    }
+
+
+    def "Matrix SUBMATRIX"() {
+        given:
+        def mtxArray1_2x2 = [[1d, 2d], [3d, 4d]]
+        def mtx1_2x2 = new Matrix(mtxArray1_2x2)
+        def mtx1_ans = new Matrix([[3d]]);
+
+        def mtxArray2_4x4 =
+                [[ 1d, 2d, 3d, 4d ],
+                 [ 5d, 6d, 7d, 8d ],
+                 [ 9d, 8d, 7d, 6d ],
+                 [ 5d, 4d, 3d, 2d ]]
+
+        def mtx2_4x4 = new Matrix(mtxArray2_4x4)
+        def mtx2_ans = new Matrix([[5d, 7d], [9d, 7d]])
+
+
+        when:
+        def mtx1_1x1 = mtx1_2x2.subMatrix(0,1)
+        def mtx2_2x2 = mtx2_4x4.subMatrix(0, 3).subMatrix(2, 1)
+
+        then:
+        mtx1_1x1 == mtx1_ans
+        mtx2_2x2 == mtx2_ans
+    }
+
+
+    def "Matrix MINOR"() {
+        given:
+        def mtxArray = [[ 3d ,  5d ,  0d ],
+                        [ 2d , -1d , -7d ],
+                        [ 6d , -1d ,  5d ]]
+        def mtx = new Matrix(mtxArray)
+
+        when:
+        def mtxMinor = mtx.minor(1,0)
+
+        then:
+        mtxMinor == 25
+    }
+
+    def "Matrix COFACTOR"() {
+        given:
+        def mtxArray = [[ 3d ,  5d ,  0d ],
+                        [ 2d , -1d , -7d ],
+                        [ 6d , -1d ,  5d ]]
+        def mtx = new Matrix(mtxArray)
+
+        when:
+        def mtxCofactor00 = mtx.cofactor(0,0)
+        def mtxCofactor10 = mtx.cofactor(1,0)
+
+        then:
+        mtxCofactor00 == -12
+        mtxCofactor10 == -25
+    }
+
+    def "Matrix INVERSE"() {
+        when:
+        def mtx1 = new Matrix([[ 8d , -5d ,  9d ,  2d ],
+                               [  7d ,  5d ,  6d ,  1d ],
+                               [ -6d ,  0d ,  9d ,  6d ],
+                               [ -3d ,  0d , -9d , -4d ]])
+        def mtx1Inverse = new Matrix([[ -0.15385d , -0.15385d , -0.28205d , -0.53846d ],
+                                      [ -0.07692d ,  0.12308d ,  0.02564d ,  0.03077d ],
+                                      [  0.35897d ,  0.35897d ,  0.43590d ,  0.92308d ],
+                                      [ -0.69231d , -0.69231d , -0.76923d , -1.92308d ]])
+
+        def mtx2 = new Matrix([[ 9d ,  3d ,  0d ,  9d ],
+                               [ -5d , -2d , -6d , -3d ],
+                               [ -4d ,  9d ,  6d ,  4d ],
+                               [ -7d ,  6d ,  6d ,  2d ]])
+        def mtx2Inverse = new Matrix([[ -0.04074d , -0.07778d ,  0.14444d , -0.22222d ],
+                                      [ -0.07778d ,  0.03333d ,  0.36667d , -0.33333d ],
+                                      [ -0.02901d , -0.14630d , -0.10926d ,  0.12963d ],
+                                      [  0.17778d ,  0.06667d , -0.26667d ,  0.33333d ]])
+
+        then:
+        mtx1.inverse() == mtx1Inverse
+        mtx1Inverse.inverse() == mtx1
+        mtx1.inverse().inverse().inverse().inverse() == mtx1
+
+        mtx2.inverse() == mtx2Inverse
+        mtx2Inverse.inverse() == mtx2
+        mtx2.inverse().inverse().inverse().inverse() == mtx2
+
+        mtx1.mult(mtx2).mult(mtx2.inverse()) == mtx1
+        mtx2.mult(mtx1).mult(mtx1.inverse()) == mtx2
     }
 
 }

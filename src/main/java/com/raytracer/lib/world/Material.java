@@ -1,7 +1,6 @@
 package com.raytracer.lib.world;
 
 import com.raytracer.lib.primitives.Color;
-import com.raytracer.lib.primitives.Colors;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;

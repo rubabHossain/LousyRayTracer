@@ -7,16 +7,13 @@ import com.raytracer.lib.primitives.Color;
 import com.raytracer.lib.primitives.Colors;
 import com.raytracer.lib.primitives.Point;
 import com.raytracer.lib.primitives.Vector;
-import com.raytracer.lib.world.LightSource;
-import com.raytracer.lib.world.Material;
-import com.raytracer.lib.world.Ray;
-import com.raytracer.lib.world.Sphere;
-import com.raytracer.lib.world.Intersection;
+import com.raytracer.lib.world.*;
+
 import java.util.Optional;
 
 
 public class App {
-    static int SCALE = 10;
+    static int SCALE = 1;
     static int height = 100 * SCALE, width = 100 * SCALE;
     static Canvas canvas = new Canvas(height, width);
 
@@ -32,6 +29,7 @@ public class App {
         Sphere s = new Sphere(material)
                         .transform(Matrices.scale(30 * SCALE,15  * SCALE,20  * SCALE))
                         .transform(Matrices.translation(50  * SCALE, 50 * SCALE, 40 * SCALE));
+        World world = new World().addEntity(s);
 
         Point rayOrigin = new Point(50 * SCALE,50 * SCALE,150 * SCALE);
 
@@ -39,8 +37,9 @@ public class App {
             for(int j = 0; j < width; j++) {
                 Vector dir = (new Point(j, i, 0)).subtract(rayOrigin).normalize();
                 Ray r = new Ray(rayOrigin, dir);
-                Optional<Intersection> hit = r.getIntersections(s).getHit();
+                r.computeIntersections(world);
 
+                Optional<Ray.Intersection> hit = r.getHit();
                 if(hit.isPresent()) {
                     Point hitPoint = r.position(hit.get().getIntersectionTime());
                     Vector normal = s.getNormalAt(hitPoint);

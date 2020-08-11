@@ -20,19 +20,18 @@ class RaySpec extends Specification {
 
     def "Ray-Sphere Intersection works"() {
         given:
-        def s = new Sphere();
+        def w = new World().addEntity(new Sphere())
         def rDiff = new Ray(new Point(0d,0d,-5d), new Vector(0d,0d,1d))
         def rSame = new Ray(new Point(0d,1d,-5d), new Vector(0d,0d,1d))
         def rNone = new Ray(new Point(0d,2d,-5d), new Vector(0d,0d,1d))
         def rNeg1 = new Ray(new Point(0d,0d,0d), new Vector(0d,0d,1d))
         def rNeg2 = new Ray(new Point(0d,0d,5d), new Vector(0d,0d,1d))
-
         when:
-        def intersectionsDiff = rDiff.getIntersections(s).getIntersectionsList()
-        def intersectionsSame = rSame.getIntersections(s).getIntersectionsList()
-        def intersectionsNone = rNone.getIntersections(s).getIntersectionsList()
-        def intersectionsNeg1 = rNeg1.getIntersections(s).getIntersectionsList()
-        def intersectionsNeg2 = rNeg2.getIntersections(s).getIntersectionsList()
+        def intersectionsDiff = rDiff.computeIntersections(w)
+        def intersectionsSame = rSame.computeIntersections(w)
+        def intersectionsNone = rNone.computeIntersections(w)
+        def intersectionsNeg1 = rNeg1.computeIntersections(w)
+        def intersectionsNeg2 = rNeg2.computeIntersections(w)
 
         then:
         intersectionsDiff.size() == 2
@@ -54,23 +53,6 @@ class RaySpec extends Specification {
         intersectionsNeg2.get(1).getIntersectionTime() == -4.0d
     }
 
-
-    def "ray-sphere intersection HIT returns lowest non-negative"() {
-        given:
-        def s = new Sphere()
-        def sDup = new Sphere()
-        def intersectionSet = new IntersectionSet(new Intersection(5, s),
-                                                  new Intersection(7, s),
-                                                  new Intersection(-3, s),
-                                                  new Intersection(2, s))
-
-        when:
-        def hit = intersectionSet.getHit()
-
-        then:
-        hit.get() == new Intersection(2, s)
-        hit.get() != new Intersection(2, sDup)
-    }
 
     def "ray transforms are correct"() {
         given:
@@ -96,19 +78,15 @@ class RaySpec extends Specification {
         def s = new Sphere()
 
         when:
-        def sScaled = s.transform(Matrices.scale(2,2,2))
-        def sTranslated = s.transform(Matrices.translation(5,0,0))
-        def intersectionsScaled = r.getIntersections(sScaled)
-        def intersectionsTranslated = r.getIntersections(sTranslated)
-
+        def wScaled = new World().addEntity(s.transform(Matrices.scale(2,2,2)))
+        def wTranslated = new World().addEntity(s.transform(Matrices.translation(5,0,0)))
 
         then:
-        intersectionsScaled.getNumIntersections() == 2
-        intersectionsScaled.getIntersectionsList().get(0).getIntersectionTime() == 3
-        intersectionsScaled.getIntersectionsList().get(1).getIntersectionTime() == 7
+        r.computeIntersections(wScaled).get(0).getIntersectionTime() == 3
+        r.computeIntersections(wScaled).get(1).getIntersectionTime() == 7
+        r.getNumIntersections() == 2
 
-        intersectionsTranslated.getNumIntersections() == 0
-
+        r.computeIntersections(wTranslated).size() == 0
     }
 
 

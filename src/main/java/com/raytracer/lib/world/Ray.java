@@ -4,15 +4,29 @@ import com.raytracer.lib.linalg.ColumnVector;
 import com.raytracer.lib.linalg.Matrix;
 import com.raytracer.lib.primitives.Point;
 import com.raytracer.lib.primitives.Vector;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
 import lombok.Value;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 
 
-@Value @RequiredArgsConstructor
 public class Ray {
-    Point origin;
-    Vector direction;
+    @Getter private final Point origin;
+    @Getter private final Vector direction;
+    @Getter private final List<Intersection> intersections;
+
+    private boolean isIntersected;
+
+
+    public Ray(Point origin, Vector direction) {
+        this.origin = origin;
+        this.direction = direction;
+        this.intersections = new ArrayList<>();
+        this.isIntersected = false;
+    }
 
 
     public Point position(double t) {
@@ -20,7 +34,58 @@ public class Ray {
     }
 
 
-    public IntersectionSet getIntersections(Sphere s) {
+    public List<Intersection> computeIntersections(World w) {
+        this.isIntersected = true;
+
+        this.intersections.clear();
+
+        for(Sphere s: w.getEntities()) {
+            List<Intersection> newIntersections = this.getIntersections(s);
+            this.intersections.addAll(newIntersections);
+        }
+
+        this.intersections.sort( (i1, i2) -> (int) Math.round(i1.getIntersectionTime() - i2.getIntersectionTime()));
+        return this.intersections;
+    }
+
+
+    public int getNumIntersections() {
+        return this.intersections.size();
+    }
+
+
+    public Optional<Intersection> getHit() {
+        if(!this.isIntersected)
+            throw new RuntimeException("Cannot call ray.getHit() before calling ray.computeIntersections().");
+
+        return this.intersections.stream()
+                .filter( i -> i.getIntersectionTime() > 0)
+                .min( (i1, i2) -> (int) Math.round(i1.getIntersectionTime() - i2.getIntersectionTime()) );
+    }
+
+
+    @Value
+    public static class Intersection {
+        double intersectionTime;
+        Sphere sphere;
+
+        Point hitPoint;
+        Vector eyeVector;
+        Vector normalAtHitPoint;
+
+        public Intersection(Ray ray, double intersectionTime, Sphere sphere) {
+            this.intersectionTime = intersectionTime;
+            this.sphere = sphere;
+
+            this.hitPoint = ray.position(intersectionTime);
+            this.eyeVector = ray.getDirection().negate();
+            this.normalAtHitPoint = sphere.getNormalAt(hitPoint);
+        }
+    }
+
+
+    /* -------------------------------------------------------------------------------------------------------------- */
+    private List<Intersection> getIntersections(Sphere s) {
         // apply inverse sphere transforms to ray
         Ray transformedRay = this.transform(s.getInverseTransformations());
 
@@ -33,17 +98,17 @@ public class Ray {
         double discriminant = (b*b) - (4*a*c);  // b^2 - 4ac
 
         if(discriminant < 0) {
-            return new IntersectionSet();
+            return new ArrayList<>();
         }
 
         double intPoint1 = ( (-1*b) - Math.sqrt(discriminant)) / (2*a);
         double intPoint2 = ( (-1*b) + Math.sqrt(discriminant)) / (2*a);
-        return new IntersectionSet(new Intersection(intPoint1, s),
-                                   new Intersection(intPoint2, s));
+        return new ArrayList<>(Arrays.asList(new Intersection(this, intPoint1, s),
+                                             new Intersection(this, intPoint2, s) ));
     }
 
 
-    public Ray transform(Matrix transformation) {
+    private Ray transform(Matrix transformation) {
         ColumnVector newOrigin = transformation.mult(this.origin);
         ColumnVector newDirection = transformation.mult(this.direction);
 

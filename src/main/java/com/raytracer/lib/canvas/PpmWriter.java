@@ -30,7 +30,7 @@ public class PpmWriter {
 
 
     private static String colorValueToScaledString(Double inp) {
-        double roundedInp = Math.round(inp) * PpmWriter.TOP_LIMIT;
+        double roundedInp = Math.round(inp * PpmWriter.TOP_LIMIT);
         roundedInp = Math.max(roundedInp, 0);
         roundedInp = Math.min(roundedInp, PpmWriter.TOP_LIMIT);
         return ((int) roundedInp) + "";

@@ -14,7 +14,7 @@ import java.util.function.BiFunction;
  */
 public class ColumnVector {
     
-    private static final double EPSILON = 1E-7;  // 0.000_000_1 -- the threshold used to determine if 2 doubles are equal.
+    private static final double EPSILON = 1E-2;  // 0.000_000_1 -- the threshold used to determine if 2 doubles are equal.
     private final ArrayList<Double> elements;    // at the lowest level, a vector is just a List of doubles.
 
 

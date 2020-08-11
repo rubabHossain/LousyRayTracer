@@ -91,4 +91,9 @@ public class Vector extends ColumnVector{
         return new Vector(newX, newY, newZ);
     }
 
+    public Vector reflect(Vector normal) {
+        double dotProduct = this.dotProduct(normal);
+        return this.subtract(normal.mult(2 * dotProduct));
+    }
+
 }

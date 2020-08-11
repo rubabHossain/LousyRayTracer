@@ -27,12 +27,20 @@ public class Color extends ColumnVector{
 
 
     public Color add(Color other) {
-        super.add(other);
-        return this;
+        return new Color(this.getRed() + other.getRed(),
+                this.getGreen() + other.getGreen(),
+                this.getBlue() + other.getBlue());
     }
 
     public Color mult(Color other) {
-        super.dotProduct(other);
-        return this;
+        return new Color(this.getRed() * other.getRed(),
+                      this.getGreen() * other.getGreen(),
+                      this.getBlue() * other.getBlue());
+    }
+
+    public Color mult(double scalar) {
+        return new Color(this.getRed() * scalar,
+                this.getGreen() * scalar,
+                this.getBlue() * scalar);
     }
 }

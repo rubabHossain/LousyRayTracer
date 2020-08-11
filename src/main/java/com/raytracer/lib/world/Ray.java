@@ -22,7 +22,7 @@ public class Ray {
 
     public IntersectionSet getIntersections(Sphere s) {
         // apply inverse sphere transforms to ray
-        Ray transformedRay = this.transform(s.getTransformations().inverse());
+        Ray transformedRay = this.transform(s.getInverseTransformations());
 
         Vector sphereToRay = (transformedRay.getOrigin()).subtract(s.getCenter());
 

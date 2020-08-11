@@ -3,8 +3,8 @@ package com.raytracer;
 import com.raytracer.lib.canvas.Canvas;
 import com.raytracer.lib.canvas.PpmWriter;
 import com.raytracer.lib.linalg.Matrices;
-import com.raytracer.lib.linalg.Matrix;
 import com.raytracer.lib.primitives.Color;
+import com.raytracer.lib.primitives.Colors;
 import com.raytracer.lib.primitives.Point;
 import com.raytracer.lib.primitives.Vector;
 import com.raytracer.lib.world.LightSource;
@@ -16,38 +16,38 @@ import java.util.Optional;
 
 
 public class App {
-    static int SCALE = 1;
+    static int SCALE = 10;
     static int height = 100 * SCALE, width = 100 * SCALE;
     static Canvas canvas = new Canvas(height, width);
-    static Point lightPoint = new Point(10 * SCALE,150 * SCALE,2 * SCALE);
-    static LightSource lightSource = new LightSource(lightPoint, new Color(1,1,1));
+
+    static Point lightPoint = new Point(10 * SCALE, 150 * SCALE, 2 * SCALE);
+    static LightSource lightSource = new LightSource(lightPoint, Colors.WHITE);
+
     static Color purple = new Color(1, 0.2, 1);
-    static Material material = new Material(purple, 0.1, 0.9, 0.9, 200);
-    static Point center = new Point(0,0,0);
-    static Matrix identity = Matrices.Identity(4);
+    static Material material = new Material(Colors.GREEN);
 
 
     public static void main( String[] args ) {
 
-        Sphere s = new Sphere(material, center, identity, identity);
-        s = s.transform(Matrices.scale(30 * SCALE,15  * SCALE,20  * SCALE))
-             .transform(Matrices.translation(50  * SCALE, 50 * SCALE, 40 * SCALE));
+        Sphere s = new Sphere(material)
+                        .transform(Matrices.scale(30 * SCALE,15  * SCALE,20  * SCALE))
+                        .transform(Matrices.translation(50  * SCALE, 50 * SCALE, 40 * SCALE));
 
         Point rayOrigin = new Point(50 * SCALE,50 * SCALE,150 * SCALE);
 
         for(int i = 0; i < height; i++) {
             for(int j = 0; j < width; j++) {
-                Vector dir = rayOrigin.subtract(new Point(j, i, 0)).negate().normalize();
+                Vector dir = (new Point(j, i, 0)).subtract(rayOrigin).normalize();
                 Ray r = new Ray(rayOrigin, dir);
                 Optional<Intersection> hit = r.getIntersections(s).getHit();
+
                 if(hit.isPresent()) {
-//                    Color c = new Color(1,1,1);
-//                    canvas.setPixel(j, i, c);
                     Point hitPoint = r.position(hit.get().getIntersectionTime());
                     Vector normal = s.getNormalAt(hitPoint);
                     Color shadedC = getColorAfterLighting(s.getMaterial(), lightSource, hitPoint, dir.negate(), normal);
                     canvas.setPixel(j, i, shadedC);
                 }
+
             }
         }
 
@@ -64,7 +64,7 @@ public class App {
         // compute ambient, diffuse, and specular contributions
         Color ambient = computeAmbientColorContribution(effectiveColor, material);
         Color diffuse = computeDiffuseColorContribution(lightVector, normal, material, effectiveColor);
-        Color specular = computeSpecularColorContribution(lightVector, normal, material, effectiveColor, eye, lightSource);
+        Color specular = computeSpecularColorContribution(lightVector, normal, material, eye, lightSource);
 
         return (ambient).add(diffuse).add(specular);
     }
@@ -83,7 +83,7 @@ public class App {
     }
 
 
-    private static Color computeSpecularColorContribution(Vector lightVector, Vector normal, Material material, Color effectiveColor, Vector eye, LightSource lightSource) {
+    private static Color computeSpecularColorContribution(Vector lightVector, Vector normal, Material material, Vector eye, LightSource lightSource) {
         double lightDotNormal = lightVector.dotProduct(normal);
         if(lightDotNormal < 0)
             return new Color(0,0,0);
@@ -95,7 +95,6 @@ public class App {
 
         double factor = Math.pow(reflectionDotEye, material.getShininess());
         return lightSource.getColor().mult(material.getSpecular()).mult(factor);
-
     }
 
 

@@ -16,12 +16,19 @@ public class Sphere {
     Matrix transformations;
     Matrix inverseTransformations;
 
+    // default
     public Sphere() {
         this.material = new Material();
         this.center = new Point(0,0,0);
         this.transformations = Matrices.Identity(4);
         this.inverseTransformations = Matrices.Identity(4);
     }
+
+    // custom material
+    public Sphere(Material material) {
+        this(material, new Point(0, 0, 0), Matrices.Identity(4), Matrices.Identity(4));
+    }
+
 
     @Override
     public boolean equals(Object o) {
